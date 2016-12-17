@@ -11,3 +11,5 @@ if [ ! -f /usr/local/bin/docker-compose ]; then
   chmod +x /usr/local/bin/docker-compose
   docker-compose --version
 fi
+
+docker-compose up
