@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  api_tenant:
+    env_file: qubeship-envs.env
+    environment:
+      DEFAULT_LISTENER_PORT: ${TENANT_API_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+    image: gcr.io/qubeship/api-tenant
+    ports:
+      - "${TENANT_API_PORT}:${TENANT_API_PORT}"
