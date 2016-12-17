@@ -6,6 +6,6 @@ export CONF_SERVER_TOKEN=xyz-1234-abcd-xyz
 export VAULT_TOKEN=xyz-1234-abcd-xyz  
 
 ## Commands:
-curl -sSL https://github.com/Qubeship/bootstrap/blob/master/bootstrap.sh | sh'  
+curl -sSL https://github.com/Qubeship/bootstrap/blob/master/bootstrap.sh | sh  
 or:  
-wget -qO- https://github.com/Qubeship/bootstrap/blob/master/bootstrap.sh | sh'
+wget -qO- https://github.com/Qubeship/bootstrap/blob/master/bootstrap.sh | sh
