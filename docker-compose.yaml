@@ -2,26 +2,48 @@ version: '2'
 
 services:
   api_tenant:
-    env_file: qubeship-envs.env
+    env_file: .env
     environment:
       DEFAULT_LISTENER_PORT: ${TENANT_API_PORT}
       CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
-    image: gcr.io/qubeship/api-tenant
+    image: gcr.io/qubeship/api-tenant:${TENANT_API_VERSION}
     ports:
       - "${TENANT_API_PORT}:${TENANT_API_PORT}"
 
   api_auth:
-    env_file: qubeship-envs.env
+    env_file: .env
     environment:
       DEFAULT_LISTENER_PORT: ${AUTH_API_PORT}
       CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
       TENANT_API_URL: http://api_tenant:${TENANT_API_PORT}/v1/tenants
-    image: gcr.io/qubeship/api-auth
+    image: gcr.io/qubeship/api-auth:${AUTH_API_VERSION}
     ports:
       - "${AUTH_API_PORT}:${AUTH_API_PORT}"
     links:
       - api_tenant
+
+  api_project:
+    env_file: .env
+    environment:
+      DEFAULT_LISTENER_PORT: ${PROJECT_API_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
+      QUBE_MONGODB_PORT_27017_TCP_ADDR: qube_mongodb
+      QUBE_MONGODB_PORT_27017_TCP_PORT: ${MONGO_PORT}
+    image: gcr.io/qubeship/api-project:${PROJECT_API_VERSION}
+    ports:
+      - "${PROJECT_API_PORT}:${PROJECT_API_PORT}"
+    links:
+      - api_auth
+      - qube_mongodb
+  qube_mongodb:
+    env_file: .env
+    image: mongo
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
