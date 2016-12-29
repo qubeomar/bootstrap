@@ -1,5 +1,5 @@
 version: '2'
-
+# docker login -e $(gcloud auth list | grep ACTIVE | grep qubeship.io | awk '{print $2}')  -u _token -p "$(gcloud auth print-access-token)" https://gcr.io
 services:
   api_tenant:
     env_file: .env
@@ -8,7 +8,7 @@ services:
       CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
-    image: gcr.io/qubeship/api-tenant:${TENANT_API_VERSION}
+    image: ${TENANT_API_IMAGE}:${TENANT_API_VERSION}
     ports:
       - "${TENANT_API_PORT}:${TENANT_API_PORT}"
 
@@ -20,7 +20,9 @@ services:
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
       TENANT_API_URL: http://api_tenant:${TENANT_API_PORT}/v1/tenants
-    image: gcr.io/qubeship/api-auth:${AUTH_API_VERSION}
+    image: ${AUTH_API_IMAGE}:${AUTH_API_VERSION}
+    depends_on:
+      - api_tenant
     ports:
       - "${AUTH_API_PORT}:${AUTH_API_PORT}"
     links:
@@ -36,14 +38,69 @@ services:
       AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
       QUBE_MONGODB_PORT_27017_TCP_ADDR: qube_mongodb
       QUBE_MONGODB_PORT_27017_TCP_PORT: ${MONGO_PORT}
-    image: gcr.io/qubeship/api-project:${PROJECT_API_VERSION}
+    image: ${PROJECT_API_IMAGE}:${PROJECT_API_VERSION}
     ports:
       - "${PROJECT_API_PORT}:${PROJECT_API_PORT}"
+    depends_on:
+      - api_auth
+      - qube_mongodb
     links:
       - api_auth
       - qube_mongodb
+
+  api_pipeline:
+    env_file: .env
+    environment:
+      DEFAULT_LISTENER_PORT: ${PIPELINE_API_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
+    image: ${PIPELINE_API_IMAGE}:${PIPELINE_API_VERSION}
+    ports:
+      - "${PIPELINE_API_PORT}:${PIPELINE_API_PORT}"
+    depends_on:
+      - qube_postgres
+      - api_auth
+    links:
+      - qube_postgres:postgres
+      - api_auth
+
+  api_environment:
+    env_file: .env
+    environment:
+      DEFAULT_LISTENER_PORT: ${ENVIRONMENT_API_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
+      QUBE_MONGODB_PORT_27017_TCP_ADDR: qube_mongodb
+      QUBE_MONGODB_PORT_27017_TCP_PORT: ${MONGO_PORT}
+    image: ${ENVIRONMENT_API_IMAGE}:${ENVIRONMENT_API_VERSION}
+    depends_on:
+      - api_auth
+      - qube_mongodb
+    ports:
+      - "${ENVIRONMENT_API_PORT}:${ENVIRONMENT_API_PORT}"
+    links:
+      - api_auth
+      - qube_mongodb
+
+  qube_events_listener:
+    env_file: .env
+    environment:
+      DEFAULT_LISTENER_PORT: ${QUBE_EVENTS_LISTENER_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+    image: ${QUBE_EVENTS_LISTENER_IMAGE}:${QUBE_EVENTS_LISTENER_VERSION}
+
   qube_mongodb:
     env_file: .env
-    image: mongo
+    image: ${MONGO_IMAGE}
     ports:
       - "${MONGO_PORT}:${MONGO_PORT}"
+
+  qube_postgres:
+    env_file: .env
+    image: ${POSTGRES_IMAGE}
