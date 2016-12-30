@@ -32,7 +32,7 @@ services:
   api_project:
     env_file: .env
     environment:
-      SPEC_PATH: $PIPELINE_API_SPEC_PATH
+      SPEC_PATH: $PROJECT_API_SPEC_PATH
       VIRTUAL_PATH: $PROJECT_API_PATH
       DEFAULT_LISTENER_PORT: ${PROJECT_API_PORT}
       CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
