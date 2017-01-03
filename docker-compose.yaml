@@ -67,7 +67,7 @@ services:
       - qube_postgres
       - api_auth
     links:
-      - qube_postgres:postgres
+      - qube_postgres:${PIPELINE_DB_HOST}
       - api_auth
 
   api_environment:
