@@ -32,7 +32,7 @@ services:
   api_project:
     env_file: .env
     environment:
-      SPEC_PATH: $PIPELINE_API_SPEC_PATH
+      SPEC_PATH: $PROJECT_API_SPEC_PATH
       VIRTUAL_PATH: $PROJECT_API_PATH
       DEFAULT_LISTENER_PORT: ${PROJECT_API_PORT}
       CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
@@ -70,24 +70,24 @@ services:
       - qube_postgres:postgres
       - api_auth
 
-  api_environment:
+  api_endpoints:
     env_file: .env
     environment:
-      SPEC_PATH: $ENVIRONMENT_API_SPEC_PATH
-      VIRTUAL_PATH: $ENVIRONMENT_API_PATH
-      DEFAULT_LISTENER_PORT: ${ENVIRONMENT_API_PORT}
+      SPEC_PATH: $ENDPOINTS_API_SPEC_PATH
+      VIRTUAL_PATH: $ENDPOINTS_API_PATH
+      DEFAULT_LISTENER_PORT: ${ENDPOINTS_API_PORT}
       CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
       AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
       QUBE_MONGODB_PORT_27017_TCP_ADDR: qube_mongodb
       QUBE_MONGODB_PORT_27017_TCP_PORT: ${MONGO_PORT}
-    image: ${ENVIRONMENT_API_IMAGE}:${ENVIRONMENT_API_VERSION}
+    image: ${ENDPOINTS_API_IMAGE}:${ENDPOINTS_API_VERSION}
     depends_on:
       - api_auth
       - qube_mongodb
     ports:
-      - "${ENVIRONMENT_API_PORT}:${ENVIRONMENT_API_PORT}"
+      - "${ENDPOINTS_API_PORT}:${ENDPOINTS_API_PORT}"
     links:
       - api_auth
       - qube_mongodb
@@ -116,6 +116,15 @@ services:
       - "${API_REGISTRY_PORT}:${API_REGISTRY_PORT}"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
+    depends_on:
+       - api_auth
+       - qube_mongodb
+       - qube_postgres
+       - qube_events_listener
+       - api_endpoints
+       - api_pipeline
+       - api_project
+       - api_tenant
 
   qube_mongodb:
     env_file: .env
