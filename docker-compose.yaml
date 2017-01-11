@@ -70,6 +70,23 @@ services:
       - qube_postgres:${PIPELINE_DB_HOST}
       - api_auth
 
+  api_toolchain:
+    env_file: .env
+    environment:
+      VIRTUAL_PATH: $TOOLCHAIN_API_PATH
+      DEFAULT_LISTENER_PORT: ${TOOLCHAIN_API_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
+    image: ${TOOLCHAIN_API_IMAGE}:${TOOLCHAIN_API_VERSION}
+    ports:
+      - "${TOOLCHAIN_API_PORT}:${TOOLCHAIN_API_PORT}"
+    depends_on:
+      - api_auth
+    links:
+      - api_auth
+
   api_endpoints:
     env_file: .env
     environment:
@@ -125,6 +142,7 @@ services:
        - api_pipeline
        - api_project
        - api_tenant
+       - api_toolchain
 
   qube_mongodb:
     env_file: .env
