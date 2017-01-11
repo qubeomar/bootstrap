@@ -1,0 +1,10 @@
+version: '2'
+services:
+  ngrok:
+    env_file: .env
+    environment:
+      TARGET_PORT: ${GIT_LISTENER_PORT}
+      TARGET_HOST: 192.168.99.101
+    image: gtriggiano/ngrok-tunnel
+    ports:
+      - "4040:4040"
