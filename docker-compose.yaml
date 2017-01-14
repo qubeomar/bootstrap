@@ -36,12 +36,8 @@ services:
       CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
-      URL_BASE_AUTH: http://api_auth:${AUTH_API_PORT}/v1
-      URL_BASE_PIPELINE: http://api_pipeline:${PIPELINE_API_PORT}/v1
-      URL_BASE_PROJECTS: http://api_project:${PROJECT_API_PORT}/v1
-
+      URL_BASE: ${API_URL_BASE}
     image: ${APP_IMAGE}:${APP_VERSION}
-
     ports:
       - "80:${APP_PORT}"
     links:
