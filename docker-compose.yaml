@@ -29,6 +29,22 @@ services:
     links:
       - api_tenant
 
+  qubeship_app:
+    env_file: .env
+    environment:
+      DEFAULT_LISTENER_PORT: ${APP_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      URL_BASE: ${API_URL_BASE}
+    image: ${APP_IMAGE}:${APP_VERSION}
+    ports:
+      - "80:${APP_PORT}"
+    links:
+      - api_auth
+      - api_pipeline
+      - api_project
+
   api_project:
     env_file: .env
     environment:
