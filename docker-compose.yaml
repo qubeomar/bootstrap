@@ -169,3 +169,16 @@ services:
   qube_postgres:
     env_file: .env
     image: ${POSTGRES_IMAGE}
+
+  qube_builder:
+    env_file: .env
+    environment:
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+    image: ${QUBE_BUILDER_IMAGE}:${QUBE_BUILDER_VERSION}
+    ports:
+      - "${QUBE_BUILDER_PORT}:${QUBE_BUILDER_PORT}"
+      - "${QUBE_BUILDER_ADDL_PORT}:${QUBE_BUILDER_ADDL_PORT}"
+    volumes:
+      - $HOME/${QUBE_BUILDER_JOBS_DIR_PATH}:/data:rw
