@@ -39,7 +39,7 @@ services:
       URL_BASE: ${API_URL_BASE}
     image: ${APP_IMAGE}:${APP_VERSION}
     ports:
-      - "80:${APP_PORT}"
+      - "${APP_PORT}:${APP_PORT}"
     links:
       - api_auth
       - api_pipeline

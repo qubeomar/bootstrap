@@ -1,0 +1,54 @@
+version: '2'
+services:
+  rabbitmq:
+      image: ${RABBITMQ_IMAGE}
+      
+  git_listener:
+    env_file: .env
+    environment:
+      DEFAULT_LISTENER_PORT: ${GIT_LISTENER_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      QUBE_URL: http://qube_platform/api/v1/webhooks/
+    image: ${GIT_LISTENER_IMAGE}:${GIT_LISTENER_VERSION}
+    ports:
+      - "${GIT_LISTENER_PORT}:${GIT_LISTENER_PORT}" 
+    depends_on:
+      - qube_platform
+    links:
+      - qube_platform
+
+  qube_platform:
+    env_file: .env
+    environment:
+      DEFAULT_LISTENER_PORT: ${QUBE_PLATFORM_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      PLATFORM_API_URL: https://${QUBE_PLATFORM_HOST}:${QUBE_PLATFORM_PORT}${QUBE_PLATFORM_API_PATH}
+      PLATFORM_AUTH_URL: https://${QUBE_PLATFORM_HOST}:${QUBE_PLATFORM_PORT}${QUBE_PLATFORM_AUTH_PATH}
+    image: ${QUBE_PLATFORM_IMAGE}:${QUBE_PLATFORM_VERSION}   
+    ports:
+      - "${QUBE_PLATFORM_PORT}:443" 
+    depends_on:
+      - qube_platform_postgres
+      - qube_platform_mongodb
+      - rabbitmq
+    links: 
+      - qube_platform_postgres:${PLATFORM_POSTGRES_DB_HOST}
+      - qube_platform_mongodb:${PLATFORM_MONGO_DB_HOST}
+      - rabbitmq
+
+  qube_platform_postgres:
+    environment: 
+      POSTGRES_USER: ${PLATFORM_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${PLATFORM_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PLATFORM_POSTGRES_DB}
+    image: ${POSTGRES_IMAGE}
+
+  qube_platform_mongodb:
+    env_file: .env
+    image: ${MONGO_IMAGE}:${MONGO_VERSION}
+    ports:
+      - "${PLATFORM_MONGO_PORT}:27017"
