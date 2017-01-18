@@ -1,6 +1,8 @@
 # bootstrap
 docker-compose for starting all Qubeship components
 
+----
+
 # Steps
 
 ### Install bootstrap
