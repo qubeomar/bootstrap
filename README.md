@@ -24,7 +24,7 @@ You are done starting the API and app modules.
 To run the platform fully, (including jenkins)
 
 ## run ngrok
-docker-compose -f docker-compose-ngrok.yaml up  
+./run_ngrok.sh   
 
 ## run everything  
 ./run.sh all
