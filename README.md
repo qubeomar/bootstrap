@@ -6,6 +6,7 @@ docker-compose for starting all Qubeship components
 ### Install bootstrap
 ```
 curl -sSL https://github.com/Qubeship/bootstrap/blob/master/bootstrap.sh | sh
+# or
 wget -qO- https://github.com/Qubeship/bootstrap/blob/master/bootstrap.sh | sh
 ```
 
