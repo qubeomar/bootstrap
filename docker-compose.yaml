@@ -182,3 +182,5 @@ services:
       - "${QUBE_BUILDER_ADDL_PORT}:${QUBE_BUILDER_ADDL_PORT}"
     volumes:
       - $HOME/${QUBE_BUILDER_JOBS_DIR_PATH}:/data:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /usr/local/bin/docker:/usr/bin/docker:z
