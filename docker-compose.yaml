@@ -94,13 +94,16 @@ services:
       CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
+      AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
     image: "${TOOLCHAIN_IMAGE}:${TOOLCHAIN_IMAGE_VERSION}"
     ports:
       - "${TOOLCHAIN_LISTENER_PORT}:${TOOLCHAIN_LISTENER_PORT}"
     depends_on:
        - qube_mongodb
+       - api_auth
     links:
        - qube_mongodb:mongo
+       - api_auth
 
   api_endpoints:
     env_file: .env
