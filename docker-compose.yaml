@@ -133,6 +133,10 @@ services:
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
     image: ${QUBE_EVENTS_LISTENER_IMAGE}:${QUBE_EVENTS_LISTENER_VERSION}
+    depends_on:
+      - qube_builder
+    links:
+      - qube_builder
 
 
   api_registry:
