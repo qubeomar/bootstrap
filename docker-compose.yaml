@@ -105,6 +105,27 @@ services:
        - qube_mongodb:mongo
        - api_auth
 
+  api_opinions:
+    env_file: .env
+    environment:
+      VIRTUAL_PATH: $OPINION_API_PATH
+      DEFAULT_LISTENER_PORT: ${OPINIONS_LISTENER_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      OPINIONS_MONGOALCHEMY_DATABASE: opinions
+      OPINIONS_MONGOALCHEMY_CONNECTION_STRING: mongodb://mongo:27017/opinions
+      OPINIONS_MONGOALCHEMY_SERVER: mongo
+      OPINIONS_MONGOALCHEMY_PORT: 27017
+      AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
+    image: "${OPINIONS_IMAGE}:${OPINIONS_IMAGE_VERSION}"
+    ports:
+      - "${OPINIONS_LISTENER_PORT}:${OPINIONS_LISTENER_PORT}"
+    depends_on:
+       - qube_mongodb
+    links:
+       - qube_mongodb:mongo
+
   api_endpoints:
     env_file: .env
     environment:
@@ -161,6 +182,7 @@ services:
        - api_project
        - api_tenant
        - api_toolchains
+       - api_opinions
 
   qube_mongodb:
     env_file: .env
