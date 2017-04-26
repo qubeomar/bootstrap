@@ -150,6 +150,27 @@ services:
       - api_auth
       - qube_mongodb
 
+  api_qubeservice:
+    env_file: .env
+    environment:
+      VIRTUAL_PATH: $QUBESERVICE_API_PATH
+      DEFAULT_LISTENER_PORT: ${QUBESERVICE_LISTENER_PORT}
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      QUBESERVICE_MONGOALCHEMY_DATABASE: qubeservice
+      QUBESERVICE_MONGOALCHEMY_CONNECTION_STRING: mongodb://mongo:27017/qubeservice
+      QUBESERVICE_MONGOALCHEMY_SERVER: mongo
+      QUBESERVICE_MONGOALCHEMY_PORT: 27017
+      AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
+    image: "${QUBESERVICE_IMAGE}:${QUBESERVICE_IMAGE_VERSION}"
+    ports:
+      - "${QUBESERVICE_LISTENER_PORT}:${QUBESERVICE_LISTENER_PORT}"
+    depends_on:
+       - qube_mongodb
+    links:
+       - qube_mongodb:mongo
+       
   qube_events_listener:
     env_file: .env
     environment:
@@ -158,6 +179,7 @@ services:
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
     image: ${QUBE_EVENTS_LISTENER_IMAGE}:${QUBE_EVENTS_LISTENER_VERSION}
+
 
 
   api_registry:
@@ -185,6 +207,7 @@ services:
        - api_tenant
        - api_toolchains
        - api_opinions
+       - api_qubeservice
 
   qube_mongodb:
     env_file: .env
