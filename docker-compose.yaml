@@ -57,8 +57,6 @@ services:
       AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
       QUBE_MONGODB_PORT_27017_TCP_ADDR: qube_mongodb
       QUBE_MONGODB_PORT_27017_TCP_PORT: ${MONGO_PORT}
-      QUBE_SERVER_ADDR: api_registry:${API_REGISTRY_PORT}
-      QUBE_SERVER_SCHEME: http
     image: ${PROJECT_API_IMAGE}:${PROJECT_API_VERSION}
     ports:
       - "${PROJECT_API_PORT}:${PROJECT_API_PORT}"
@@ -88,45 +86,22 @@ services:
       - qube_postgres:${PIPELINE_DB_HOST}
       - api_auth
 
-  api_toolchains:
+  api_toolchain:
     env_file: .env
     environment:
       VIRTUAL_PATH: $TOOLCHAIN_API_PATH
-      DEFAULT_LISTENER_PORT: ${TOOLCHAIN_LISTENER_PORT}
+      DEFAULT_LISTENER_PORT: ${TOOLCHAIN_API_PORT}
       CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
       AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
-    image: "${TOOLCHAIN_IMAGE}:${TOOLCHAIN_IMAGE_VERSION}"
+    image: ${TOOLCHAIN_API_IMAGE}:${TOOLCHAIN_API_VERSION}
     ports:
-      - "${TOOLCHAIN_LISTENER_PORT}:${TOOLCHAIN_LISTENER_PORT}"
+      - "${TOOLCHAIN_API_PORT}:${TOOLCHAIN_API_PORT}"
     depends_on:
-       - qube_mongodb
-       - api_auth
+      - api_auth
     links:
-       - qube_mongodb:mongo
-       - api_auth
-
-  api_opinions:
-    env_file: .env
-    environment:
-      VIRTUAL_PATH: $OPINION_API_PATH
-      DEFAULT_LISTENER_PORT: ${OPINIONS_LISTENER_PORT}
-      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
-      VAULT_TOKEN: ${VAULT_TOKEN}
-      ENV_ID: ${ENV_ID}
-      OPINIONS_MONGOALCHEMY_DATABASE: opinions
-      OPINIONS_MONGOALCHEMY_CONNECTION_STRING: mongodb://mongo:27017/opinions
-      OPINIONS_MONGOALCHEMY_SERVER: mongo
-      OPINIONS_MONGOALCHEMY_PORT: 27017
-      AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
-    image: "${OPINIONS_IMAGE}:${OPINIONS_IMAGE_VERSION}"
-    ports:
-      - "${OPINIONS_LISTENER_PORT}:${OPINIONS_LISTENER_PORT}"
-    depends_on:
-       - qube_mongodb
-    links:
-       - qube_mongodb:mongo
+      - api_auth
 
   api_endpoints:
     env_file: .env
@@ -158,6 +133,10 @@ services:
       VAULT_TOKEN: ${VAULT_TOKEN}
       ENV_ID: ${ENV_ID}
     image: ${QUBE_EVENTS_LISTENER_IMAGE}:${QUBE_EVENTS_LISTENER_VERSION}
+    depends_on:
+      - qube_builder
+    links:
+      - qube_builder
 
 
   api_registry:
@@ -183,8 +162,7 @@ services:
        - api_pipeline
        - api_project
        - api_tenant
-       - api_toolchains
-       - api_opinions
+       - api_toolchain
 
   qube_mongodb:
     env_file: .env
@@ -196,20 +174,20 @@ services:
     env_file: .env
     image: ${POSTGRES_IMAGE}
 
-  # qube_builder:
-  #   env_file: .env
-  #   environment:
-  #     CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
-  #     VAULT_TOKEN: ${VAULT_TOKEN}
-  #     ENV_ID: ${ENV_ID}
-  #     JAVA_OPTS: ${QUBE_BUILDER_JAVA_OPTS}
-  #     JNLP_SLAVE_IMAGE: ${JNLP_SLAVE_BASE_IMAGE}:${JNLP_SLAVE_VERSION}
-  #   image: ${QUBE_BUILDER_IMAGE}:${QUBE_BUILDER_VERSION}
-  #   ports:
-  #     - "${QUBE_BUILDER_PORT}:${QUBE_BUILDER_PORT}"
-  #     - "${QUBE_BUILDER_ADDL_PORT}:${QUBE_BUILDER_ADDL_PORT}"
-  #   volumes:
-  #     - $HOME/${QUBE_BUILDER_JOBS_DIR_PATH}:/data:rw
-  #     - $HOME/${QUBE_BUILDER_JENKINS_HOME}:/opt:rw
-  #     - /var/run/docker.sock:/var/run/docker.sock:ro
-  #     - /usr/local/bin/docker:/usr/bin/docker:z
+  qube_builder:
+    env_file: .env
+    environment:
+      CONF_SERVER_TOKEN: ${CONF_SERVER_TOKEN}
+      VAULT_TOKEN: ${VAULT_TOKEN}
+      ENV_ID: ${ENV_ID}
+      JAVA_OPTS: ${QUBE_BUILDER_JAVA_OPTS}
+      JNLP_SLAVE_IMAGE: ${JNLP_SLAVE_BASE_IMAGE}:${JNLP_SLAVE_VERSION}
+    image: ${QUBE_BUILDER_IMAGE}:${QUBE_BUILDER_VERSION}
+    ports:
+      - "${QUBE_BUILDER_PORT}:${QUBE_BUILDER_PORT}"
+      - "${QUBE_BUILDER_ADDL_PORT}:${QUBE_BUILDER_ADDL_PORT}"
+    volumes:
+      - $HOME/${QUBE_BUILDER_JOBS_DIR_PATH}:/data:rw
+      - $HOME/${QUBE_BUILDER_JENKINS_HOME}:/opt:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /usr/local/bin/docker:/usr/bin/docker:z
