@@ -48,7 +48,6 @@ services:
       VAULT_ADDR: ${VAULT_ADDR}
       TENANT: ${TENANT}
       ENV_TYPE: ${ENV_TYPE}
-
       URL_BASE: ${API_URL_BASE}
     image: ${APP_IMAGE}:${APP_VERSION}
     ports:
