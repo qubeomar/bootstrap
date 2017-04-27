@@ -1,0 +1,10 @@
+version: '2'
+# docker login -e $(gcloud auth list | grep ACTIVE | grep qubeship.io | awk '{print $2}')  -u _token -p "$(gcloud auth print-access-token)" https://gcr.io
+services:
+  api_mock:
+    env_file: .env
+    image: ${MOCK_API_IMAGE}:${MOCK_API_VERSION}
+    ports:
+      - "${MOCK_API_PORT}:${MOCK_API_PORT}"
+    volumes:
+      - ${QUBE_MOCK_DB_DIR}:/usr/src/app:rw

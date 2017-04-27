@@ -122,11 +122,15 @@ services:
       TENANT: ${TENANT}
       ENV_TYPE: ${ENV_TYPE}
       AUTH_API_URL: http://api_auth:${AUTH_API_PORT}/v1/auth
+      TOOLCHAIN_MONGOALCHEMY_DATABASE: toolchain
+      TOOLCHAIN_MONGOALCHEMY_CONNECTION_STRING: mongodb://mongo:27017/toolchain
+      TOOLCHAIN_MONGOALCHEMY_SERVER: mongo
+      TOOLCHAIN_MONGOALCHEMY_PORT: 27017
     image: "${TOOLCHAIN_API_IMAGE}:${TOOLCHAIN_API_VERSION}"
     ports:
       - "${TOOLCHAIN_API_PORT}:${TOOLCHAIN_API_PORT}"
     depends_on:
-       - qube_mongodb
+       - qube_mongodb:mongo
        - api_auth
     links:
        - qube_mongodb:mongo
