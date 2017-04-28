@@ -1,5 +1,9 @@
 version: '2'
 # docker login -e $(gcloud auth list | grep ACTIVE | grep qubeship.io | awk '{print $2}')  -u _token -p "$(gcloud auth print-access-token)" https://gcr.io
+volumes:
+  qubeship-mongo-data:
+  qubeship-postgres-data:
+
 services:
   api_tenant:
     env_file: .env
@@ -298,10 +302,14 @@ services:
     image: ${MONGO_IMAGE}
     ports:
       - "${MONGO_PORT}:${MONGO_PORT}"
+    volumes:
+      - qubeship-mongo-data:/data/db
 
   qube_postgres:
     env_file: .env
     image: ${POSTGRES_IMAGE}
+    volumes:
+      - qubeship-postgres-data:/var/lib/postgresql/data
 
   qube_builder:
     env_file: .env
