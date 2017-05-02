@@ -1,12 +1,7 @@
 #!/bin/bash
 
-components=$1
-shift
 services=$@
 set -e -x
-if [ -z $components ]; then
-	components="base"
-fi
 
 ./login.sh
 base_command="docker-compose"
