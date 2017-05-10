@@ -42,17 +42,18 @@ docker volume rm `docker volume ls -q -f dangling=true`
 ----
 # Deploying services 
 
-1. Bring down running Qubeship if one is running from previous Bootstrap execution
+### 1. Bring down running Qubeship if one is running from previous Bootstrap execution
 ```
   ./down.sh
  ```
  Docker container pertaining to Qubeship should all have stopped and removed.
  
-2. Remove docker image of the service you want to replace
+### 2. Remove docker image of the service you want to replace
 ```
   docker rmi <imageid>
 ```
-3. Configure the .env file
+
+### 3. Configure the .env file
 
 - Make a backup of this file in case you would like to revert back to the community container images.
 
@@ -73,9 +74,9 @@ Eg:
 
 Save the changes.
 
-4. Using the command line, login your docker repository 
+### 4. Using the command line, login your docker repository 
 
-5. Run bootstrap.sh
+### 5. Run bootstrap.sh
 
 If everything is OK, the service from the new image should be executing in the Qubehship enviornment started by Bootstrap
 
